@@ -36,6 +36,15 @@ def select_model(args, device):
         # model_path = os.path.join('model_zoo', 'team00_cat.pth')
         # model = CAT()
         # model.load_state_dict(torch.load(model_path), strict=True)
+    elif model_id == 9:
+        from models.team09_Swin2SR import Swin2SR
+        model_path = os.path.join('model_zoo', 'team09_swin2sr.pth')
+        model = Swin2SR(upscale=4, in_chans=3, img_size=64, window_size=8,
+                    img_range=1., depths=[6, 6, 6, 6, 6, 6], embed_dim=180, num_heads=[6, 6, 6, 6, 6, 6],
+                    mlp_ratio=2, upsampler='pixelshuffle', resi_connection='1conv')
+        model.load_state_dict(torch.load(model_path), strict=True)
+        name, data_range = f"{model_id:02}_Swin2SR_baseline", 1.0
+        
     else:
         raise NotImplementedError(f"Model {model_id} is not implemented.")
 
