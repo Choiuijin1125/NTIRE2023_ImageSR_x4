@@ -9,7 +9,7 @@ from pprint import pprint
 from utils.model_summary import get_model_activation, get_model_flops
 from utils import utils_logger
 from utils import utils_image as util
-
+from utils.utils_model import test_mode
 
 def select_model(args, device):
     # Model ID is assigned according to the order of the submissions.
@@ -85,10 +85,14 @@ def select_dataset(data_dir, mode):
     return path
 
 
-def forward(img_lq, model, tile=None, tile_overlap=32, scale=4):
+def forward(img_lq, model, tile=None, tile_overlap=32, scale=4, aug=False):
     if tile is None:
         # test the image as a whole
-        output = model(img_lq)
+        if not aug:
+            output = model(img_lq)
+        else:
+            output = test_mode(model, img_lq, mode=3, sf=4, modulo=1)
+        
     else:
         # test the image tile by tile
         b, c, h, w = img_lq.size()
@@ -116,7 +120,7 @@ def forward(img_lq, model, tile=None, tile_overlap=32, scale=4):
 
 
 def run(model, model_name, data_range, tile, logger, device, args, mode="test"):
-
+    model_id = args.model_id
     sf = 4
     border = sf
     results = dict()
@@ -151,7 +155,10 @@ def run(model, model_name, data_range, tile, logger, device, args, mode="test"):
         # (2) img_sr
         # --------------------------------
         start.record()
-        img_sr = forward(img_lr, model, tile)
+        if not model_id == 9:
+            img_sr = forward(img_lr, model, tile)
+        else: ## self-ensemble
+            img_sr = forward(img_lr, model, tile, aug=True)
         end.record()
         torch.cuda.synchronize()
         results[f"{mode}_runtime"].append(start.elapsed_time(end))  # milliseconds

@@ -809,6 +809,26 @@ def imresize_np(img, scale, antialiasing=True):
 
     return out_2.numpy()
 
+def augment_img_tensor4(img, mode=0):
+    '''Kai Zhang (github: https://github.com/cszn)
+    '''
+    if mode == 0:
+        return img
+    elif mode == 1:
+        return img.rot90(1, [2, 3]).flip([2])
+    elif mode == 2:
+        return img.flip([2])
+    elif mode == 3:
+        return img.rot90(3, [2, 3])
+    elif mode == 4:
+        return img.rot90(2, [2, 3]).flip([2])
+    elif mode == 5:
+        return img.rot90(1, [2, 3])
+    elif mode == 6:
+        return img.rot90(2, [2, 3])
+    elif mode == 7:
+        return img.rot90(3, [2, 3]).flip([2])
+
 
 if __name__ == '__main__':
     img = imread_uint('test.bmp',3)
