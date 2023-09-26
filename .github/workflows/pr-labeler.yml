@@ -1,0 +1,20 @@
+# https://velog.io/@jeonbyeongmin/Github-Action%EC%9C%BC%EB%A1%9C-Labeling-%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0
+# workflow 의 이름
+name: PR labeler
+
+on: # 트리거될 이벤트 설정
+  pull_request:
+    types: [opened]
+
+jobs: # 트리거되었을 때 실행될 job 작성
+  labeler: # runner 설정
+    runs-on: ubuntu-latest # 리파지토리에 대한 권한 설정
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Check Labels
+        id: labeler
+        uses: jimschubert/labeler-action@v1
+        with:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
